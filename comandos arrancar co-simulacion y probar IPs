@@ -148,7 +148,7 @@ devmem 0x3e203ffc 8 0x9 #fila 64 columna 64
 devmem 0x60000000 8 0x01
 #lectura Matriz c
 #posicion fila 1 columna 1
-devmem 0x3e300000 #0x00000006
+devmem 0x3e300004 #0x00000006
 #posicion fila 2 columna2
 devmem 0x3e300104 #0x00000020
 #posicion fila 64 columna 64
