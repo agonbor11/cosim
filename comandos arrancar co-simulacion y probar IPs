@@ -1,0 +1,155 @@
+
+cd -cosim
+
+qemu/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -m 1G -kernel /home/tfm/cosim/buildroot/output/images/uImage -dtb /home/tfm/cosim/buildroot/output/images/zynq-zc702.dtb --initrd /home/tfm/cosim/buildroot/output/images/rootfs.cpio.gz -serial /dev/null -serial mon:stdio -display none -net nic -net nic -net user -machine-path /home/tfm/cosim/buildroot/handles -icount 0,sleep=off -rtc clock=vm -sync-quantum 1000000
+
+LD_LIBRARY_PATH=/home/tfm/cosim/systemc-2.3.2/lib-linux64/ ./systemctlm-cosim-demo/zynq_demo unix:/home/tfm/cosim/buildroot/handles/qemu-rport-_cosim@0 1000000
+
+buildroot login: root
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////	DMA	 /////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+devmem 0x50000000 32 0x3e700000 #dst
+devmem 0x50000004 32 0x3e800000 #src
+devmem 0x3e800000 32 0x55667788 #src
+devmem 0x3e700000 32 0x11223344 #dst
+
+devmem 0x50000008 8 0x03 #longitud en bytes  
+#start
+devmem 0x5000000c 8 0x01 #arrancar IP
+#lectura de dst_addr
+devmem 0x3e700000 
+#0x11667788
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////keccak-256//////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+devmem 0x60000010 32 0x3e100000 #puntero a M
+devmem 0x6000001c 32 0x00000002 #valor de l
+devmem 0x60000024 32 0x3e300000 #puntero a O
+#rellenar M
+devmem 0x3e100000 8 0x08 
+devmem 0x3e100001 8 0x0c
+#arrancar IP
+devmem 0x60000000 8 0x01
+#lectura O
+devmem 0x3e300000 8 #0x3B
+devmem 0x3e300001 8 #0x64
+devmem 0x3e300002 8 #0x4C
+devmem 0x3e300003 8 #0xAB
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Matmul 4x4//////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+devmem 0x60000010 32 0x3e100000 #puntero de A
+devmem 0x6000001c 32 0x3e200000 #puntero de B
+devmem 0x60000028 32 0x3e300000 #puntero de C
+#matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+devmem 0x3e100008 8 0x4
+devmem 0x3e10000c 8 0x2
+
+devmem 0x3e100010 8 0x5
+devmem 0x3e100014 8 0x7
+devmem 0x3e100018 8 0x8
+devmem 0x3e10001c 8 0x6
+
+devmem 0x3e100020 8 0x6 
+devmem 0x3e100024 8 0x7
+devmem 0x3e100028 8 0x2
+devmem 0x3e10002c 8 0x3
+
+devmem 0x3e100030 8 0x4
+devmem 0x3e100034 8 0x8
+devmem 0x3e100038 8 0x9
+devmem 0x3e10003c 8 0x6
+
+#matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200004 8 0x6
+devmem 0x3e200008 8 0x7
+devmem 0x3e20000c 8 0x1
+
+devmem 0x3e200010 8 0x2
+devmem 0x3e200014 8 0x4
+devmem 0x3e200018 8 0x3
+devmem 0x3e20001c 8 0x8
+
+devmem 0x3e200020 8 0x9
+devmem 0x3e200024 8 0x1
+devmem 0x3e200028 8 0x3
+devmem 0x3e20002c 8 0x5
+
+devmem 0x3e200030 8 0x8 
+devmem 0x3e200034 8 0x7
+devmem 0x3e200038 8 0x2
+devmem 0x3e20003c 8 0x0
+
+
+#ap_start
+devmem 0x60000000 8 0x01
+#lectura Matriz c
+devmem 0x3e300000 #0x00000041
+devmem 0x3e300004 #0x00000028
+devmem 0x3e300008 #0x00000023
+devmem 0x3e30000c #0x00000035
+devmem 0x3e300010 #0x0000009F
+devmem 0x3e300014 #0x0000006C
+devmem 0x3e300018 #0x0000005C
+devmem 0x3e30001c #0x00000065
+devmem 0x3e300020 #0x00000056
+devmem 0x3e300024 #0x00000057
+devmem 0x3e300028 #0x0000004B
+devmem 0x3e30002c #0x00000048
+devmem 0x3e300030 #0x000000A5
+devmem 0x3e300034 #0x0000006B
+devmem 0x3e300038 #0x0000005B
+devmem 0x3e30003c #0x00000071
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Matmul 64x64////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+devmem 0x60000010 32 0x3e100000 #puntero de A
+devmem 0x6000001c 32 0x3e200000 #puntero de B
+devmem 0x60000028 32 0x3e300000 #puntero de C
+
+#matriz A
+devmem 0x3e100000 8 0x1 #fila 1 columna 1
+
+devmem 0x3e100100 8 0x1 #fila 2 columna 1
+devmem 0x3e100104 8 0x7 #fila 2 columna 2
+devmem 0x3e100108 8 0x3 #fila 2 columna 3
+devmem 0x3e10010c 8 0x2 #fila 2 columna 4
+
+
+devmem 0x3e103ff8 8 0x1 #fila 63 columna 63
+devmem 0x3e103ffc 8 0x7 #fila 63 columna 64
+
+#matriz B
+
+devmem 0x3e200004 8 0x6 #fila 1 columna 2
+devmem 0x3e200104 8 0x0 #fila 2 columna 2
+devmem 0x3e200204 8 0x4 #fila 3 columna 2
+devmem 0x3e200304 8 0x7 #fila 2 columna 2
+
+devmem 0x3e203efc 8 0x6 #fila 63 columna 64
+devmem 0x3e203ffc 8 0x9 #fila 64 columna 64
+
+
+#ap_start
+devmem 0x60000000 8 0x01
+#lectura Matriz c
+#posicion fila 1 columna 1
+devmem 0x3e300000 #0x00000006
+#posicion fila 2 columna2
+devmem 0x3e300104 #0x00000020
+#posicion fila 64 columna 64
+devmem 0x3e303ffc #0x00000045

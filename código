@@ -1,0 +1,512 @@
+en carpeta cosim
+
+----qemu/aarch64-softmmu/qemu-system-aarch64 -M arm-generic-fdt-7series -m 1G -kernel /home/tfm/cosim/buildroot/output/images/uImage -dtb /home/tfm/cosim/buildroot/output/images/zynq-zc702.dtb --initrd /home/tfm/cosim/buildroot/output/images/rootfs.cpio.gz -serial /dev/null -serial mon:stdio -display none -net nic -net nic -net user -machine-path /home/tfm/cosim/buildroot/handles -icount 0,sleep=off -rtc clock=vm -sync-quantum 1000000
+
+
+
+----LD_LIBRARY_PATH=/home/tfm/cosim/systemc-2.3.2/lib-linux64/ ./systemctlm-cosim-demo/zynq_demo unix:/home/tfm/cosim/buildroot/handles/qemu-rport-_cosim@0 1000000
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////	DMA	//////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+devmem 0x50000000 32 0x3e100000 //dst
+devmem 0x50000004 32 0x3e200000 //src
+
+devmem 0x3e200000 32 0x55667788 //src
+devmem 0x3e100000 32 0x11223344 //dst
+
+devmem 0x50000008 8 0x20 //esto son bytes,creo 
+//porque si pongo 0x01 sale 0x11223388 modificando los 8 bits primeros
+
+
+//start
+devmem 0x5000000c 8 0x01 
+////lectura de dst_addr
+devmem 0x3e100000 
+0x55667788
+
+
+tener en cuenta que cada vez que hago devmem 0x5000000c 8 0x01  se modifican las
+direcciones destino y origen por lo que si hago varias veces devmem 0x5000000c 8 0x01 
+al final aun siendo 8 bits de copia y pega van a variar todo el destino o noooo jaja
+mirar bien porque para mi que cambiaban pero ahora se ve que no
+
+
+///////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////sha3-keccak/////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+buildroot login: root
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x00000002 
+devmem 0x60000024 32 0x3e300000
+devmem 0x3e100000 32 0x00000c08 //meter en encriptador como 080c //a[0] es 08 y a[1] es 0c porq a es uint8
+devmem 0x60000000 8 0x01
+devmem 0x3e300000
+0xAB4C643B
+devmem 0x3e300004
+0x120451B0
+devmem 0x3e300008
+0x894D54B2
+devmem 0x3e30000c
+0x3D426EF8
+devmem 0x3e300010
+0x747928C3
+devmem 0x3e300014
+0x023C8D90
+devmem 0x3e300018
+0x183DDB02
+devmem 0x3e30001c
+0x1D56DBB4
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////// Matmul 4*4, calculo //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+//matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+devmem 0x3e100008 8 0x4
+devmem 0x3e10000c 8 0x2
+
+devmem 0x3e100010 8 0x5
+devmem 0x3e100014 8 0x7
+devmem 0x3e100018 8 0x8
+devmem 0x3e10001c 8 0x6
+
+devmem 0x3e100020 8 0x6 
+//no poner estos del final 
+devmem 0x3e100024 8 0x0
+devmem 0x3e100028 8 0x0
+devmem 0x3e10002c 8 0x0
+
+devmem 0x3e100030 8 0x0 
+devmem 0x3e100034 8 0x0
+devmem 0x3e100038 8 0x0
+devmem 0x3e10003c 8 0x0
+
+//matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200004 8 0x6
+devmem 0x3e200008 8 0x7
+devmem 0x3e20000c 8 0x1
+
+devmem 0x3e200010 8 0x2
+devmem 0x3e200014 8 0x4
+devmem 0x3e200018 8 0x3
+devmem 0x3e20001c 8 0x8
+
+devmem 0x3e200020 8 0x9
+//no poner
+devmem 0x3e200024 8 0x0
+devmem 0x3e200028 8 0x0
+devmem 0x3e20002c 8 0x0
+
+devmem 0x3e200030 8 0x0 
+devmem 0x3e200034 8 0x0
+devmem 0x3e200038 8 0x0
+devmem 0x3e20003c 8 0x0
+
+//////////////////////
+//ap_start
+devmem 0x60000000 8 0x01
+//leo matriz c
+devmem 0x3e300000
+0x00000031
+devmem 0x3e300004
+0x00000016
+devmem 0x3e300008
+0x00000013
+devmem 0x3e30000c
+0x00000021
+devmem 0x3e300010
+0x0000006F
+devmem 0x3e300014
+0x0000003A
+devmem 0x3e300018
+0x00000038
+devmem 0x3e30001c
+0x0000003D
+devmem 0x3e300020
+0x0000001E
+devmem 0x3e300024
+0x00000024
+devmem 0x3e300028 
+0x0000002A
+devmem 0x3e30002c
+0x00000006
+devmem 0x3e300030
+0
+devmem 0x3e300034
+0
+devmem 0x3e300038 
+0
+devmem 0x3e30003c
+
+/////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////// Matmul 8*8, calculo //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+//matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x6 
+
+
+//matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200020 8 0x9
+
+//////////////////////
+//ap_start
+devmem 0x60000000 8 0x01
+//leo matriz c
+devmem 0x3e300000
+0x0000003B
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////// Matmul 16*16, calculo //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////// dura 25 segundos
+
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+//matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+
+
+//matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200040 8 0x6
+
+
+//////////////////////
+//ap_start
+devmem 0x60000000 8 0x01
+//leo matriz c
+devmem 0x3e300000
+0x0000001D
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////// Matmul 32*32, calculo //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//// cálculo dura 3 minutos 13 segundos
+
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+//matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+
+
+//matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200080 8 0x6 //primera columna fila2
+
+
+//////////////////////
+//ap_start
+devmem 0x60000000 8 0x01
+//leo matriz c
+devmem 0x3e300000
+0x0000001D
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////// Matmul64*64, //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+calculo sobre media hora
+///////////// calculo casilla posicion fila 1 columna1
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+
+
+devmem 0x3e100000 8 0x1
+devmem 0x3e200000 8 0x9
+devmem 0x60000000 8 0x01
+devmem 0x3e300000
+0x00000009
+
+////////////////////// calculo casilla posicion fila 1 columna2
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+
+devmem 0x3e100000 8 0x1
+devmem 0x3e200004 8 0x6
+devmem 0x60000000 8 0x01
+devmem 0x3e300004
+0x00000006
+
+////////////// calculo casilla posicion fila 2 columna2
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+
+
+devmem 0x3e100100 8 0x1
+devmem 0x3e100104 8 0x7
+devmem 0x3e100108 8 0x3
+devmem 0x3e10010c 8 0x2
+
+devmem 0x3e200004 8 0x6
+devmem 0x3e200104 8 0x0
+devmem 0x3e200204 8 0x4
+devmem 0x3e200304 8 0x7
+
+devmem 0x60000000 8 0x01
+devmem 0x3e300104
+0x00000020
+
+
+
+////////////////// calculo casilla posicion fila64 columna64
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+
+
+devmem 0x3e103ff8 8 0x1 //fila 63 columna 63
+devmem 0x3e103ffc 8 0x7 //fila 64 columna 64
+
+
+devmem 0x3e203efc 8 0x6 // fila 63 columna 64
+devmem 0x3e203ffc 8 0x9 // fila 64 columna 64
+
+
+devmem 0x60000000 8 0x01
+devmem 0x3e303ffc
+0x00000045
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+
+/////////////modif keccak
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 8 0x02
+devmem 0x60000028 32 0x3e300000
+
+devmem 0x3e300000 32 0x00030000 //este es el c[2] q es el tercer miembro del array
+devmem 0x3e200000 32 0x00000002
+devmem 0x3e100000 32 0x00000705 //a[0] es 05 y a[1] es 07 porq a es uint8
+
+devmem 0x60000000 8 0x01
+
+devmem 0x3e300000
+0x00040705
+/////////////////////
+
+
+
+
+
+
+
+
+
+////////////keccak/////////////
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000024 32 0x3e300000
+
+devmem 0x3e200000 8 0x02
+devmem 0x3e100000 8 0x11
+devmem 0x3e100000 16 0x3131
+//ap_start
+devmem 0x60000000 8 0x01
+
+devmem 0x3e300000 
+
+/////////////modif keccak
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 8 0x02
+devmem 0x60000028 32 0x3e300000
+
+devmem 0x3e300000 32 0x00030000 //este es el c[2] q es el tercer miembro del array
+devmem 0x3e200000 32 0x00000002
+devmem 0x3e100000 32 0x00000705 //a[0] es 05 y a[1] es 07 porq a es uint8
+
+devmem 0x60000000 8 0x01
+
+devmem 0x3e300000
+0x00040705
+/////////////////////
+
+
+
+
+///////////// keccak final con hexadecimal
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x00000002 
+devmem 0x60000024 32 0x3e300000
+
+devmem 0x3e300000 32 0x00000000 //este es el output 
+devmem 0x3e100000 32 0x00000c08 //a[0] es 08 y a[1] es 0c porq a es uint8
+
+devmem 0x60000000 8 0x01
+
+devmem 0x3e300000
+0xAB4C643B
+devmem 0x3e300004
+0x120451B0
+devmem 0x3e300008
+0x894D54B2
+devmem 0x3e30000c
+0x3D426EF8
+devmem 0x3e300010
+0x747928C3
+devmem 0x3e300014
+0x023C8D90
+devmem 0x3e300018
+0x183DDB02
+devmem 0x3e30001c
+0x1D56DBB4
+
+////////////////
+3b644cab
+b0510412
+b2544d89
+f86e423d
+c3287974
+908d3c02
+02db3d18
+b4db561d
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+////////////////
+
+matmul2x2
+
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+devmem 0x3e100008 8 0x4
+devmem 0x3e10000c 8 0x2
+
+devmem 0x3e200000 8 0x5
+devmem 0x3e200004 8 0x6
+devmem 0x3e200008 8 0x7
+devmem 0x3e20000c 8 0x1
+
+devmem 0x60000000 8 0x01
+devmem 0x3e300000
+0x00000021
+devmem 0x3e300004
+0x0000000A
+devmem 0x3e300008
+0x00000022
+devmem 0x3e30000c
+0x0000001A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////
+
+
+///matmul 3x3
+devmem 0x60000010 32 0x3e100000
+devmem 0x6000001c 32 0x3e200000
+devmem 0x60000028 32 0x3e300000
+//matriz A
+devmem 0x3e100000 8 0x1
+devmem 0x3e100004 8 0x4
+devmem 0x3e100008 8 0x4
+devmem 0x3e10000c 8 0x2
+devmem 0x3e100010 8 0x5
+devmem 0x3e100014 8 0x7
+devmem 0x3e100018 8 0x8
+devmem 0x3e10001c 8 0x6
+devmem 0x3e100020 8 0x6
+//matriz B
+devmem 0x3e200000 8 0x5
+devmem 0x3e200004 8 0x6
+devmem 0x3e200008 8 0x7
+devmem 0x3e20000c 8 0x1
+devmem 0x3e200010 8 0x2
+devmem 0x3e200014 8 0x4
+devmem 0x3e200018 8 0x3
+devmem 0x3e20001c 8 0x8
+devmem 0x3e200020 8 0x9
+//
+//ap_start
+devmem 0x60000000 8 0x01
+//leo matriz c
+devmem 0x3e300000
+0x00000015
+devmem 0x3e300004
+0x0000002E
+devmem 0x3e300008
+0x0000003B
+devmem 0x3e30000c
+0x00000024
+devmem 0x3e300010
+0x0000004E
+devmem 0x3e300014
+0x00000061
+devmem 0x3e300018
+0x00000040
+devmem 0x3e30001c
+0x0000006C
+devmem 0x3e300020
+0x00000086
+
+
+/////////////////////////////////////
+
+
+
+
+
