@@ -53,10 +53,10 @@ SC_MODULE(Top)
 	demodma *dma[NR_DEMODMA];
 	sc_signal<bool> rst, rst_n;
 	SC_HAS_PROCESS(Top);
-sc_clock *clk;
-    Vmatmul *al;
+	sc_clock *clk;
+   	Vmatmul *al;
 	tlm2axilite_bridge<6, 32> *tlm2axi_al;
-    axi2tlm_bridge<64, AXIFULL_DATA_WIDTH,1,8,2,1,1,1,1,1> *axi2tlm_af;
+    	axi2tlm_bridge<64, AXIFULL_DATA_WIDTH,1,8,2,1,1,1,1,1> *axi2tlm_af;
 //////creacion de señales para conectar con los bridges
 
 //axilite
@@ -89,7 +89,7 @@ sc_clock *clk;
 	sc_signal<bool> af_awready;
 	sc_signal<sc_bv<64> > af_awaddr;
 	sc_signal<sc_bv<3> > af_awprot;
-    sc_signal<bool> af_awuser;
+    	sc_signal<bool> af_awuser;
 	sc_signal<sc_bv<4> > af_awregion;
 	sc_signal<sc_bv<4> > af_awqos;
 	sc_signal<sc_bv<4> > af_awcache;
@@ -99,19 +99,19 @@ sc_clock *clk;
 	sc_signal<bool > af_awid;
 	sc_signal<sc_bv<2> > af_awlock;
 
-    sc_signal<bool> af_wid;
-    sc_signal<bool> af_wvalid;
+    	sc_signal<bool> af_wid;
+    	sc_signal<bool> af_wvalid;
 	sc_signal<bool> af_wready;
 	sc_signal<sc_bv<AXIFULL_DATA_WIDTH> > af_wdata;
 	sc_signal<sc_bv<AXIFULL_DATA_WIDTH/8> > af_wstrb;
-    sc_signal<bool> af_wuser;
+    	sc_signal<bool> af_wuser;
 	sc_signal<bool> af_wlast;
 
 	sc_signal<bool> af_bvalid;
 	sc_signal<bool> af_bready;
 	sc_signal<sc_bv<2> > af_bresp;
 	sc_signal<bool> af_buser;
-    sc_signal<bool> af_bid;
+    	sc_signal<bool> af_bid;
 
 	sc_signal<bool> af_arvalid;
 	sc_signal<bool> af_arready;
@@ -124,15 +124,15 @@ sc_clock *clk;
 	sc_signal<sc_bv<2> > af_arburst;
 	sc_signal<sc_bv<3> > af_arsize;
 	sc_signal<sc_bv<8> > af_arlen;
-    sc_signal<bool > af_arid;
+    	sc_signal<bool > af_arid;
 	sc_signal<sc_bv<2> > af_arlock;
 
 	sc_signal<bool> af_rvalid;
 	sc_signal<bool> af_rready;
 	sc_signal<sc_bv<AXIFULL_DATA_WIDTH> > af_rdata;
 	sc_signal<sc_bv<2> > af_rresp;
-    sc_signal<bool> af_ruser;
-    sc_signal<bool> af_rid;
+    	sc_signal<bool> af_ruser;
+    	sc_signal<bool> af_rid;
 	sc_signal<bool> af_rlast;
 
 	void pull_reset(void) {
@@ -142,7 +142,7 @@ sc_clock *clk;
 		rst.write(false);
 	}
 
-void gen_rst_n(void)
+	void gen_rst_n(void)
 	{
 		rst_n.write(!rst.read());
 	}
@@ -236,8 +236,7 @@ void gen_rst_n(void)
 		zynq.rst(rst);
 
 
-	bus.memmap(0x40000000ULL, 0x100 - 1,
-				ADDRMODE_RELATIVE, -1, debug.socket);
+	bus.memmap(0x40000000ULL, 0x100 - 1,ADDRMODE_RELATIVE, -1, debug.socket);
 
 	for (i = 0; i < (sizeof dma / sizeof dma[0]); i++) {
 			char name[16];
@@ -264,15 +263,15 @@ void gen_rst_n(void)
 			dma[i]->init_socket.bind(*(bus.t_sk[1 + i])); 
 			dma[i]->irq(zynq.pl2ps_irq[1 + i]);
 		}
-   zynq.m_axi_gp[0]->bind(*(bus.t_sk[0])); 
+   		zynq.m_axi_gp[0]->bind(*(bus.t_sk[0])); 
 
-clk = new sc_clock("clk", sc_time(10, SC_US));
-al = new Vmatmul("matmul");
+		clk = new sc_clock("clk", sc_time(10, SC_US));
+		al = new Vmatmul("matmul");
 
 //////////////////conectar bridges a señales
 //axilite bridge con señales
 		tlm2axi_al->clk(*clk);
-        tlm2axi_al->resetn(rst_n);
+        	tlm2axi_al->resetn(rst_n);
 
 		tlm2axi_al->awvalid(al_awvalid);
 		tlm2axi_al->awready(al_awready);
@@ -303,7 +302,7 @@ al = new Vmatmul("matmul");
 		axi2tlm_af->clk(*clk);
 		axi2tlm_af->resetn(rst_n);
 
-        axi2tlm_af->awvalid(af_awvalid);
+        	axi2tlm_af->awvalid(af_awvalid);
 		axi2tlm_af->awready(af_awready);
 		axi2tlm_af->awaddr(af_awaddr);
 		axi2tlm_af->awprot(af_awprot);
@@ -357,7 +356,7 @@ al = new Vmatmul("matmul");
     al->ap_clk(*clk);
     al->ap_rst_n(rst_n);
 	// señales de tlm2axilite con IP
-   al->s_axi_control_AWVALID(al_awvalid);
+    al->s_axi_control_AWVALID(al_awvalid);
     al->s_axi_control_AWREADY(al_awready);
     al->s_axi_control_AWADDR(al_awaddr);
 
